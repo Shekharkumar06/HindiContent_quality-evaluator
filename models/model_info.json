@@ -1,0 +1,6 @@
+{
+  "model_type": "TF-IDF char n-grams + MultiOutput Logistic Regression",
+  "training_rows": 3864,
+  "test_rows": 966,
+  "label_source": "weak heuristics (ordinal scores 1\u20135)"
+}
