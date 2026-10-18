@@ -89,7 +89,7 @@ def evaluate_text(text: str, model):
 
 
 st.sidebar.markdown("### Dimensions")
-st.sidebar.markdown("- Grammar\\n- Semantic relevance\\n- Fluency\\n- Cultural context")
+st.sidebar.markdown("**Grammar** · **Relevance** · **Fluency** · **Cultural context**")
 st.sidebar.caption("Experimental baseline · human review recommended")
 model = load_model()
 if model is None:
@@ -120,11 +120,11 @@ with left:
 with right:
     st.subheader("What this checks")
     st.markdown(
-        "**01 · Grammatical correctness**\\n\\nSurface language patterns."
-        "\\n\\n**02 · Semantic relevance**\\n\\nA provisional text-pattern estimate; "
+        "**01 · Grammatical correctness**\n\nSurface language patterns."
+        "\n\n**02 · Semantic relevance**\n\nA provisional text-pattern estimate; "
         "a source prompt is needed for true relevance."
-        "\\n\\n**03 · Fluency**\\n\\nReadability and repetition signals."
-        "\\n\\n**04 · Cultural appropriateness**\\n\\nHuman context-sensitive review is essential."
+        "\n\n**03 · Fluency**\n\nReadability and repetition signals."
+        "\n\n**04 · Cultural appropriateness**\n\nHuman context-sensitive review is essential."
     )
     st.info("Scores are experimental; they are not objective truth.")
 
