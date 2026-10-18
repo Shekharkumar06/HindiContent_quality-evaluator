@@ -35,10 +35,13 @@ temp/
 # Streamlit local secrets
 .streamlit/secrets.toml
 
-# Training data (HF pe zaroorat nahi, size bhi bada hota hai)
+# Local training data
 data/raw/
 data/*.csv
 data/*.zip
+
+# Optional model artifacts can be large; lightweight HF deployment has heuristic fallback
+models/*.joblib
 
 # Test / coverage
 .pytest_cache/
