@@ -1,56 +1,60 @@
-# Hindi AI Content Quality Evaluation System
+---
+title: Hindi Content Quality Evaluator
+emoji: ◈
+colorFrom: indigo
+colorTo: blue
+sdk: streamlit
+sdk_version: 1.50.0
+app_file: app.py
+pinned: false
+---
 
-Minimal, flat-style Hindi NLP app for reviewing **grammatical correctness, semantic relevance, fluency, and cultural appropriateness**. Includes a Jupyter training notebook, open-data downloader, training script, FastAPI API, Streamlit dashboard, tests, annotation guidelines and a dashboard preview.
+# Hindi AI Content Quality Evaluator
 
-## Problem statement
-Hindi AI-generated text can include grammar errors, awkward phrasing, off-topic content, or culturally insensitive assumptions. This project provides a repeatable review workflow with dimension estimates and surface-level flags.
+A Streamlit dashboard for experimental Hindi AI-content quality review across four dimensions: grammatical correctness, semantic relevance, fluency, and cultural appropriateness. It also exposes inspectable text signals and a downloadable JSON result.
 
-## What is implemented
-- Downloads a Hindi Wikipedia sample from [Hugging Face `wikimedia/wikipedia`](https://huggingface.co/datasets/wikimedia/wikipedia).
-- Generates transparent provisional labels, trains TF-IDF character n-grams + multi-output logistic regression.
-- Saves trained model and metrics to `models/`.
-- FastAPI `/health`, `/model-info`, `/evaluate`.
-- Streamlit flat/minimal dashboard with dimension cards, review flags, signals and JSON export.
-- Notebook: `notebooks/hindi_content_quality_training.ipynb`.
-- Human annotation guide and illustrative sample output.
+## Hugging Face Spaces
 
-## Methodology
-1. Collect Hindi Wikipedia text.
-2. Normalize and deduplicate.
-3. Weak-label using simple, inspectable text heuristics.
-4. Train a TF-IDF + logistic regression classifier for four dimensions.
-5. Report hold-out macro-F1 and classification reports.
-6. Serve model with FastAPI and render results in Streamlit.
-7. Replace heuristic labels with diverse human ratings for research-grade evaluation.
+This branch (`hf-deploy`) is prepared for a Streamlit Space:
 
-**Critical limitation:** labels are weak heuristics, not expert judgments. Metrics only measure how well the model imitates the heuristics. Cultural appropriateness and semantic relevance are context-dependent; the starter model is not a validated quality judge.
+1. Create a new **Streamlit** Space on Hugging Face.
+2. Upload/push the contents of this branch to that Space's repository.
+3. Hugging Face reads the Space metadata above and installs `requirements.txt`.
+4. The Space runs `app.py`; no separate FastAPI service is needed.
 
-## Quick start (Windows PowerShell)
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python download_data.py --limit 5000
-python train.py
-```
-macOS/Linux: create/activate a venv with `python3 -m venv .venv` and `source .venv/bin/activate`, then run the same pip/download/train commands.
+The Space uses repository-relative paths. The serialized model artifact is not bundled in this lightweight deployment branch. The dashboard therefore runs with the transparent heuristic baseline, and it will automatically use `models/quality_model.joblib` when a compatible trained artifact is present. Training data and heavyweight training-only dependencies are not installed in the Space.
 
-## Launch
-Terminal 1: `uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000`
-Terminal 2: `streamlit run app.py`
-Dashboard: http://localhost:8501 · API docs: http://127.0.0.1:8000/docs
+## Features
 
-## Notebook training
-Run `jupyter lab`, open `notebooks/hindi_content_quality_training.ipynb`, then execute cells top-to-bottom. It downloads data, builds labels, trains/evaluates the model, and saves artifacts.
+- Four dimension estimates: grammar, relevance, fluency, and cultural context.
+- Surface-level review flags and text signals.
+- JSON output and downloadable evaluation result.
+- Lightweight fallback when the optional model artifact is missing or cannot be loaded.
+- Original training workflow, FastAPI service, notebook, evaluation metrics, and annotation documentation remain in the repository.
 
-## Sample API call
+## Local run
+
+Use Python 3.11 or 3.12 in a virtual environment:
+
 ```bash
-curl -X POST http://127.0.0.1:8000/evaluate -H "Content-Type: application/json" -d "{\"text\":\"यह एक उदाहरण वाक्य है।\"}"
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run app.py
 ```
-See `docs/sample_outputs.md`. The sample is illustrative, not a result from a particular run.
 
-## Structure
-`app.py`, `download_data.py`, `train.py`, `backend/main.py`, `src/quality.py`, `notebooks/hindi_content_quality_training.ipynb`, `docs/`, `tests/`, `data/`, `models/`.
+The original FastAPI backend is still available for local/API deployments. Launch it separately with `uvicorn backend.main:app --reload --port 8000`; it expects the trained artifact under `models/quality_model.joblib`.
 
-## Next steps
-Use the included `docs/annotation_guidelines.md` to collect human annotations. Track annotator agreement, add original prompts for relevance judgments, evaluate genre/dialect slices, and document failure cases. Do not use this baseline for automatic censorship or high-impact decisions.
+## Training (optional, local)
+
+The training and download workflow has extra dependencies not installed by the Space's minimal runtime. Install the training dependencies separately, run `python download_data.py --limit 5000`, then `python train.py` to generate model artifacts. Training labels are weak heuristics, not human judgments.
+
+## Limitations
+
+- This is a research/demo baseline, not a validated content-quality judge.
+- Semantic relevance cannot be reliably assessed without the original prompt/context.
+- Cultural appropriateness is context-sensitive and should receive human review.
+- No flagged signal does not establish that content is correct or safe.
+
+See `docs/annotation_guidelines.md` for human-evaluation guidance.
